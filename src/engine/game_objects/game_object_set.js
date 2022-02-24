@@ -23,8 +23,14 @@ class GameObjectSet {
 
     removeFromSet(obj) {
         let index = this.mSet.indexOf(obj);
+        console.log(index);
         if (index > -1)
             this.mSet.splice(index, 1);
+    }
+
+    removeFirstFromSet() {
+        if (this.mSet.length  > 0)
+            this.mSet.splice(0, 1);
     }
     
     update() {
