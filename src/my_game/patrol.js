@@ -66,9 +66,17 @@ class Patrol {
         
     }
     
-    hit() {
+    hitHead() {
         this.xPos += 5;
+        
+        
+    }
+
+    hitTopWing() {
         this.wing_one.incrementAlpha();
+    }
+
+    hitBottomWing() {
         this.wing_two.incrementAlpha();
     }
 

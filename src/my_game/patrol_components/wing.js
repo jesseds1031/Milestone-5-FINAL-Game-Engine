@@ -42,9 +42,11 @@ class Wing{
 
         xform.setPosition(this.mXPos.get(), this.mYPos.get());
         this.updateBBox();
+        /*
         if(this.mRenderComponent.getColor()[3] > 0.005) {
             this.decrementAlpha();
         }
+        */
     }
 
     draw(aCamera) {

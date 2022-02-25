@@ -142,7 +142,7 @@ class MyGame extends engine.Scene {
         if (engine.input.isKeyClicked(engine.input.keys.J)) {
             for (let i = 0; i < this.mPatrols.size(); i++) {
                const element = this.mPatrols.getObjectAt(i);   
-               element.hit()   
+               element.hitHead()   
            }
         }
 
@@ -165,7 +165,7 @@ class MyGame extends engine.Scene {
             }
         }
 
-        for (let i = this.mDyePacksd.size() - 1; i >= 0; i--) {
+        for (let i = this.mDyePacks.size() - 1; i >= 0; i--) {
             console.log(this.mDyePacks.getObjectAt(i).getToDelete());
             if (this.mDyePacks.getObjectAt(i).getToDelete()) { 
                 this.mDyePacks.removeFromSet(this.mDyePacks.getObjectAt(i));
