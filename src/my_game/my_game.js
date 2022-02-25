@@ -148,7 +148,7 @@ class MyGame extends engine.Scene {
 
 
         for (let i = this.mPatrols.size() - 1; i >= 0; i--) {
-            console.log(this.mPatrols.getObjectAt(i).shouldTerminate())
+
            if(this.mPatrols.getObjectAt(i).shouldTerminate()) {
                this.mPatrols.removeFromSet(this.mPatrols.getObjectAt(i));
            } 
@@ -165,12 +165,13 @@ class MyGame extends engine.Scene {
             }
         }
 
-        for (let i = 0; i < this.mDyePacks.size(); i++) {
-            // if DyePack should be deleted
+        for (let i = this.mDyePacksd.size() - 1; i >= 0; i--) {
+            console.log(this.mDyePacks.getObjectAt(i).getToDelete());
             if (this.mDyePacks.getObjectAt(i).getToDelete()) { 
-                this.mDyePacks.removeFromSet(i);
+                this.mDyePacks.removeFromSet(this.mDyePacks.getObjectAt(i));
             }
         }
+
 
         this.mDyePacks.update();
         this.mPatrols.update();
