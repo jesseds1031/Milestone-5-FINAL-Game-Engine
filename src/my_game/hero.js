@@ -9,9 +9,9 @@ class Hero {
         this.kDelta = 0.3;
         
         this.mRenderComponent = new engine.SpriteRenderable(spriteTexture);
-        this.mRenderComponent.setElementPixelPositions(0, 120, 0, 180);
+        this.mRenderComponent.setElementPixelPositions(0, 1024, 0, 512);
+        this.mRenderComponent.setElementUVCoordinate(0, 0.125, 0, 0.361);
         this.mRenderComponent.setColor([1, 1, 1, 0]);
-        
         this.mRenderComponent.getXform().setSize(9, 12);
         this.mRenderComponent.getXform().setPosition(atX, atY);
 

@@ -5,6 +5,10 @@ import Hero from "./hero.js";
 import engine from "../engine/index.js";
 import TextureRenderable from "../engine/renderables/texture_renderable_main.js";
 import SpriteRenderable from "../engine/renderables/sprite_renderable.js";
+import Patrol from "./patrol.js";
+import Head from "./patrol_components/head.js";
+import Wing from "./patrol_components/wing.js";
+import GameObjectSet from "../engine/game_objects/game_object_set.js";
 
 class MyGame extends engine.Scene {
     constructor() {
@@ -14,6 +18,7 @@ class MyGame extends engine.Scene {
         this.kDyePackSprite = "assets/dye_pack.png";
         this.kBg = "assets/bg.png";
         this.kHero = "assets/dye.png";
+        this.kSpriteSheet = "assets/SpriteSheet.png";
 
         // The camera to view the scene
         this.mCamera = null;
@@ -26,20 +31,24 @@ class MyGame extends engine.Scene {
 
         this.mMsg = null;
         
+        this.mTestPatrol = null;
+        this.mPatrols = null;
     
     }
 
     load() {
-        engine.texture.load(this.kDyePackSprite);
+        //engine.texture.load(this.kDyePackSprite);
         engine.texture.load(this.kBg);
-        engine.texture.load(this.kHero);
+        //engine.texture.load(this.kHero);
+        engine.texture.load(this.kSpriteSheet);
         
     }
 
     unload() {
-        engine.texture.unload(this.kDyePackSprite);
+        //engine.texture.unload(this.kDyePackSprite);
         engine.texture.unload(this.kBg);
-        engine.texture.unload(this.kHero);
+        //engine.texture.unload(this.kHero);
+        engine.texture.load(this.kSpriteSheet);
     }
         
     init() {
@@ -62,11 +71,13 @@ class MyGame extends engine.Scene {
         this.mBg.getXform().setSize(400, 300);
         this.mBg.getXform().setPosition(30, 27.5);
 
-        this.mHero = new Hero(this.kHero, 30, 27.5);
+        this.mHero = new Hero(this.kSpriteSheet, 30, 27.5);
 
-        this.mDyePacks = new engine.GameObjectSet()
+        this.mDyePacks = new engine.GameObjectSet();
+
+        this.mPatrols = new engine.GameObjectSet();
+        this.mPatrols.addToSet(new Patrol(this.kSpriteSheet, 30, 27.5));
     }
-    
     // This is the draw function, make sure to setup proper drawing environment, and more
     // importantly, make sure to _NOT_ change any state.
     draw() {
@@ -77,7 +88,8 @@ class MyGame extends engine.Scene {
         this.mBg.draw(this.mCamera); 
         this.mDyePacks.draw(this.mCamera);
         this.mHero.draw(this.mCamera);
-        
+        this.mPatrols.draw(this.mCamera);
+
         this.mMsg.draw(this.mCamera);   // only draw status in the main camera
     }
     
@@ -86,13 +98,14 @@ class MyGame extends engine.Scene {
     update () {
         let msg = "Status: DyePacks(" + this.mDyePacks.size() + ") " + "Patrols() Autospawn()";
 
+
         // Move hero
         this.mHero.update(this.mCamera.mouseWCX(), this.mCamera.mouseWCY());
 
         // Get DyePack to spawn
-        if (engine.input.isKeyClicked(engine.input.keys.Space)) {
+        if (engine.input.isKeyClicked(engine.input.keys.Z)) {
 
-            let dyePack = new DyePack(this.kDyePackSprite, 
+            let dyePack = new DyePack(this.kSpriteSheet, 
                 this.mCamera.mouseWCX(), this.mCamera.mouseWCY());
             
             //add to gameobject set
@@ -109,6 +122,7 @@ class MyGame extends engine.Scene {
         }
 
         this.mDyePacks.update();
+        this.mPatrols.update();
         this.mMsg.setText(msg);
     }
 }

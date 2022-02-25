@@ -8,7 +8,8 @@ class DyePack extends engine.GameObject{
         super(null);
         this.kDelta = 0.3;
         this.mRenderComponent = new engine.SpriteRenderable(spriteTexture);
-        this.mRenderComponent.setElementPixelPositions(0, 120, 0, 180);
+        this.mRenderComponent.setElementPixelPositions(0, 1024, 0, 512);
+        this.mRenderComponent.setElementUVCoordinate(0.48828125, 0.5849609375, 0, 0.30078125)
         this.mRenderComponent.setColor([.5, .6, .5, 0]);
         this.mRenderComponent.getXform().setPosition(atX, atY);
         this.mRenderComponent.getXform().setSize(2, 3.25);
