@@ -33,6 +33,10 @@ class MyGame extends engine.Scene {
         
         this.mTestPatrol = null;
         this.mPatrols = null;
+
+        this.autoSpawn = false;
+        this.spawnTimer = 10000;
+        this.showLines = false;
     
     }
 
@@ -56,7 +60,7 @@ class MyGame extends engine.Scene {
         this.mCamera = new engine.Camera(
             vec2.fromValues(30, 27.5), // position of the camera
             200,                       // width of camera
-            [0, 0, 800, 800]           // viewport (orgX, orgY, width, height)
+            [0, 0, 640, 480]           // viewport (orgX, orgY, width, height)
         );
         this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
                 // sets the background to gray
@@ -76,7 +80,6 @@ class MyGame extends engine.Scene {
         this.mDyePacks = new engine.GameObjectSet();
 
         this.mPatrols = new engine.GameObjectSet();
-        this.mPatrols.addToSet(new Patrol(this.kSpriteSheet, 30, 27.5));
     }
     // This is the draw function, make sure to setup proper drawing environment, and more
     // importantly, make sure to _NOT_ change any state.
@@ -96,7 +99,8 @@ class MyGame extends engine.Scene {
     // The Update function, updates the application state. Make sure to _NOT_ draw
     // anything from this function!
     update () {
-        let msg = "Status: DyePacks(" + this.mDyePacks.size() + ") " + "Patrols() Autospawn()";
+        let msg = "Status: DyePacks(" + this.mDyePacks.size() + ") " + "Patrols("  + this.mPatrols.size() +  ") Autospawn(" + this.autoSpawn + ")" +
+        " showLines(" + this.showLines + ")";
 
 
         // Move hero
@@ -114,6 +118,53 @@ class MyGame extends engine.Scene {
             console.log(this.mDyePacks);
         }
 
+        //auto-spawn toggle with P
+        if (engine.input.isKeyClicked(engine.input.keys.P)) {
+            this.autoSpawn = this.autoSpawn ? false : true;
+            this.spawnTimer = Math.floor(Math.random() * (240 - 140 + 1) + 140)
+        }
+
+        //manual-spawn with C
+        if (engine.input.isKeyClicked(engine.input.keys.C)) {
+            this.spawn();
+        }
+
+        //toggle bounds with B
+        if (engine.input.isKeyClicked(engine.input.keys.B)) {
+            this.showLines = this.showLines ? false : true;
+            for (let i = 0; i < this.mPatrols.size(); i++) {
+               const element = this.mPatrols.getObjectAt(i);   
+               element.shouldShowLines(this.showLines);     
+           }
+        }
+
+        //Trigger hit events with j
+        if (engine.input.isKeyClicked(engine.input.keys.J)) {
+            for (let i = 0; i < this.mPatrols.size(); i++) {
+               const element = this.mPatrols.getObjectAt(i);   
+               element.hit()   
+           }
+        }
+
+
+        for (let i = this.mPatrols.size() - 1; i >= 0; i--) {
+            console.log(this.mPatrols.getObjectAt(i).shouldTerminate())
+           if(this.mPatrols.getObjectAt(i).shouldTerminate()) {
+               this.mPatrols.removeFromSet(this.mPatrols.getObjectAt(i));
+           } 
+        }
+
+
+        //autoSpawn capabilities
+        if(this.autoSpawn) {
+            console.log(this.spawnTimer);
+            this.spawnTimer -= 1;
+            if(this.spawnTimer <= 0) {
+                this.spawn();
+                this.spawnTimer = Math.floor(Math.random() * (240 - 140 + 1) + 140)
+            }
+        }
+
         for (let i = 0; i < this.mDyePacks.size(); i++) {
             // if DyePack should be deleted
             if (this.mDyePacks.getObjectAt(i).getToDelete()) { 
@@ -123,8 +174,20 @@ class MyGame extends engine.Scene {
 
         this.mDyePacks.update();
         this.mPatrols.update();
+
+
         this.mMsg.setText(msg);
     }
+
+    spawn() {
+        let randPosX = Math.random() * (130 * .75 - 30) + 30;
+        let randPosY = Math.random() * (76.875 - (-47.5 * .75)) + (-47.5 * .75);
+        let randXDir = Math.random() < 0.5 ? 1 : -1;
+        let randYDir = Math.random() < 0.5 ? 1 : -1;
+        this.mPatrols.addToSet(new Patrol(this.kSpriteSheet, randPosX, randPosY, [randXDir, randYDir], this.showLines));
+
+    }
+
 }
 
 window.onload = function () {

@@ -24,6 +24,14 @@ class Hero {
         this.mIsHit = false;
     }
 
+    getBBox() {
+        return new BoundingBox(
+            this.mRenderComponent.getXform().getPosition(), 
+            this.mRenderComponent.getXform().getWidth(),
+            this.mRenderComponent.getXform().getHeight()
+        );
+    }
+
     update(targetX, targetY) {
 
 

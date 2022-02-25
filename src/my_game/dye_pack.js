@@ -1,6 +1,7 @@
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
 import engine from "../engine/index.js";
+import BoundingBox from "../engine/utils/bounding_box.js";
 import Oscillate from "../engine/utils/oscillate.js";
 
 class DyePack extends engine.GameObject{
@@ -27,8 +28,17 @@ class DyePack extends engine.GameObject{
         // Hit events
         this.mOscillate = new Oscillate(4, 20, 300); 
         this.mYOscillate = new Oscillate(.2, 20, 300);  
-    
+
+
         this.mIsHit = false;
+    }
+
+    getBBox() {
+        return new BoundingBox(
+            this.mRenderComponent.getXform().getPosition(), 
+            this.mRenderComponent.getXform().getWidth(),
+            this.mRenderComponent.getXform().getHeight()
+        );
     }
 
     update() {
