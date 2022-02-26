@@ -3,9 +3,11 @@
 import engine from "../engine/index.js";
 import Lerp from "../engine/utils/lerp.js";
 import Oscillate from "../engine/utils/oscillate.js";
+import BoundingBox from "../engine/utils/bounding_box.js";
 
-class Hero {
+class Hero extends engine.GameObject{
     constructor(spriteTexture, atX, atY) {
+        super(null);
         this.kDelta = 0.3;
         
         this.mRenderComponent = new engine.SpriteRenderable(spriteTexture);
@@ -24,16 +26,16 @@ class Hero {
         this.mIsHit = false;
     }
 
+    getPosition() {
+        return this.mRenderComponent.getXform().getPosition();
+    }
+
     getBBox() {
         return new BoundingBox(
             this.mRenderComponent.getXform().getPosition(), 
             this.mRenderComponent.getXform().getWidth(),
             this.mRenderComponent.getXform().getHeight()
         );
-    }
-
-    getPosition() {
-        return this.mRenderComponent.getXform().getPosition();
     }
 
     update(targetX, targetY) {
@@ -52,9 +54,7 @@ class Hero {
 
         // hit events w/ oscillate
         if (engine.input.isKeyClicked(engine.input.keys.Q)) {
-            this.mOscillate.reStart();
-            this.mYOscillate.reStart();
-            this.mIsHit = true;
+            this.startOscillate();
         }
 
         if (this.mIsHit) {
@@ -67,6 +67,14 @@ class Hero {
             this.mIsHit = false;
         }
 
+    }
+
+    startOscillate() {
+        if (!this.mIsHit) {
+            this.mOscillate.reStart();
+            this.mYOscillate.reStart();
+            this.mIsHit = true;
+        }
     }
     
     draw(aCamera) {
