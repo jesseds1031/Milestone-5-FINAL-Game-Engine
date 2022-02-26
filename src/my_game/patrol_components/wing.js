@@ -6,8 +6,9 @@ import BoundingBox from "../../engine/utils/bounding_box.js";
 import Lerp from "../../engine/utils/lerp.js";
 import Oscillate from "../../engine/utils/oscillate.js";
 
-class Wing{
+class Wing extends engine.GameObject{
     constructor(spriteTexture, atX, atY) {
+        super(null);
         this.kDelta = 0.3;
         
         this.mRenderComponent = new engine.SpriteAnimateRenderable(spriteTexture);
