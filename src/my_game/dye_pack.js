@@ -41,6 +41,10 @@ class DyePack extends engine.GameObject{
         );
     }
 
+    getPosition() {
+        return this.mRenderComponent.getXform().getPosition();
+    }
+
     update() {
         let currentTime = performance.now();
         this.mTimePassed = currentTime - this.mCreationTime;

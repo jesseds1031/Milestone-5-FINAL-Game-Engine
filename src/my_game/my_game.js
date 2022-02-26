@@ -9,6 +9,7 @@ import Patrol from "./patrol.js";
 import Head from "./patrol_components/head.js";
 import Wing from "./patrol_components/wing.js";
 import GameObjectSet from "../engine/game_objects/game_object_set.js";
+import ZoomCameraSystem from "../engine/cameras/ZoomCameraSystem.js";
 
 class MyGame extends engine.Scene {
     constructor() {
@@ -37,6 +38,7 @@ class MyGame extends engine.Scene {
         this.autoSpawn = false;
         this.spawnTimer = 10000;
         this.showLines = false;
+        this.zoomCams = null;
     
     }
 
@@ -64,7 +66,8 @@ class MyGame extends engine.Scene {
         );
         this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
                 // sets the background to gray
-    
+        this.mCamera.setWCCenter(100, 100)
+        console.log(this.mCamera.getWCCenter())
 
         this.mMsg = new engine.FontRenderable("Status Message");
         this.mMsg.setColor([1, 1, 1, 1]);
@@ -80,6 +83,8 @@ class MyGame extends engine.Scene {
         this.mDyePacks = new engine.GameObjectSet();
 
         this.mPatrols = new engine.GameObjectSet();
+
+        this.zoomCams = new ZoomCameraSystem(0, 490, 150, 150, 10)
     }
     // This is the draw function, make sure to setup proper drawing environment, and more
     // importantly, make sure to _NOT_ change any state.
@@ -94,6 +99,21 @@ class MyGame extends engine.Scene {
         this.mPatrols.draw(this.mCamera);
 
         this.mMsg.draw(this.mCamera);   // only draw status in the main camera
+
+        var cams = this.zoomCams.getCameras();
+        cams.forEach(wrapCam => {
+            if(wrapCam.isActive()) {
+                var cam = wrapCam.getCam()
+                cam.setViewAndCameraMatrix();
+                //console.log(cam.getWCCenter())
+                this.mBg.draw(cam); 
+                this.mDyePacks.draw(cam);
+                this.mHero.draw(cam);
+                this.mPatrols.draw(cam);
+            }
+        }); 
+
+        //ZoomCamersSystem Loop
     }
     
     // The Update function, updates the application state. Make sure to _NOT_ draw
@@ -102,6 +122,30 @@ class MyGame extends engine.Scene {
         let msg = "Status: DyePacks(" + this.mDyePacks.size() + ") " + "Patrols("  + this.mPatrols.size() +  ") Autospawn(" + this.autoSpawn + ")" +
         " showLines(" + this.showLines + ")";
 
+        this.zoomCams.update();
+
+        if (engine.input.isKeyClicked(engine.input.keys.Zero)) {
+            this.zoomCams.activateHero(this.mHero, 120)
+           
+        }
+
+        if (engine.input.isKeyClicked(engine.input.keys.One)) {
+            if(this.mDyePacks.size() > 0) {
+                this.zoomCams.activateManualDyePack(0, this.mDyePacks.getObjectAt(0), 120)
+            }
+        }
+
+        if (engine.input.isKeyClicked(engine.input.keys.Two)) {
+            if(this.mDyePacks.size() > 0) {
+                this.zoomCams.activateManualDyePack(1, this.mDyePacks.getObjectAt(0), 120)
+            }
+        }
+
+        if (engine.input.isKeyClicked(engine.input.keys.Three)) {
+            if(this.mDyePacks.size() > 0) {
+                this.zoomCams.activateManualDyePack(2, this.mDyePacks.getObjectAt(0), 120)
+            }
+        }
 
         // Move hero
         this.mHero.update(this.mCamera.mouseWCX(), this.mCamera.mouseWCY());

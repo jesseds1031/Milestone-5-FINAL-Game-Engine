@@ -32,6 +32,10 @@ class Hero {
         );
     }
 
+    getPosition() {
+        return this.mRenderComponent.getXform().getPosition();
+    }
+
     update(targetX, targetY) {
 
 
