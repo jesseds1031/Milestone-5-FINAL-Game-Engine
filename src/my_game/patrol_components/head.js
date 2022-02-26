@@ -5,15 +5,16 @@ import LineRenderable from "../../engine/renderables/line_renderable.js";
 import BoundingBox from "../../engine/utils/bounding_box.js";
 import Oscillate from "../../engine/utils/oscillate.js";
 
-class Head{
+class Head extends engine.GameObject{
     constructor(spriteTexture, atX, atY) {
+        super(null);
         this.mRenderComponent = new engine.SpriteRenderable(spriteTexture);
         this.mRenderComponent.setElementPixelPositions(0, 1024, 0, 512);
         this.mRenderComponent.setElementUVCoordinate(0.1435546875, 0.2880859375, 0, 0.375)
         //this.mRenderComponent.setElementUVCoordinate(0, 0.125, 0, 0.361);
         this.mRenderComponent.setColor([.5, .6, .5, 0]);
         this.mRenderComponent.getXform().setPosition(atX, atY);
-        this.mRenderComponent.getXform().setSize(7.5, 9);
+        this.mRenderComponent.getXform().setSize(7.5, 7.5);
         this.BBox = null;
 
     }
@@ -21,6 +22,10 @@ class Head{
     update(targetX, targetY) {
         this.mRenderComponent.getXform().setPosition(targetX, targetY);
         this.updateBBox();
+    }
+
+    getBBox() {
+        return this.BBox;
     }
 
     draw(aCamera) {
