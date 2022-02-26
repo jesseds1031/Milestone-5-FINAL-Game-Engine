@@ -1,8 +1,8 @@
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
 import engine from "../engine/index.js";
-import BoundingBox from "../engine/utils/bounding_box.js";
 import Oscillate from "../engine/utils/oscillate.js";
+import BoundingBox from "../engine/utils/bounding_box.js";
 
 class DyePack extends engine.GameObject{
     constructor(spriteTexture, atX, atY) {
@@ -27,10 +27,12 @@ class DyePack extends engine.GameObject{
 
         // Hit events
         this.mOscillate = new Oscillate(4, 20, 300); 
-        this.mYOscillate = new Oscillate(.2, 20, 300);  
-
 
         this.mIsHit = false;
+    }
+
+    getPosition() {
+        return this.mRenderComponent.getXform().getPosition();
     }
 
     getBBox() {
@@ -41,8 +43,19 @@ class DyePack extends engine.GameObject{
         );
     }
 
-    getPosition() {
-        return this.mRenderComponent.getXform().getPosition();
+    startOscillate() {
+        if (!this.mIsHit) {
+            this.mOscillate.reStart();
+            this.mIsHit = true;
+        }
+    }
+
+    getIsHit() {
+        return this.mIsHit;
+    }
+
+    getSpeed() {
+        return this.mDeltaX;
     }
 
     update() {
@@ -67,26 +80,26 @@ class DyePack extends engine.GameObject{
 
         // slow function
         if (engine.input.isKeyPressed(engine.input.keys.D)) { // or collision w/ patrol
-            this.mDeltaX -= 0.1;
+            this.slow()
         }
 
         if (engine.input.isKeyClicked(engine.input.keys.S)) {
-            this.mOscillate.reStart();
-            this.mYOscillate.reStart();
-            this.mIsHit = true;
+            this.startOscillate();
         }
 
         if (this.mIsHit) {
             let x = this.mOscillate.getNext();
-            let y = this.mYOscillate.getNext();
             this.mRenderComponent.getXform().incXPosBy(x);
-            this.mRenderComponent.getXform().incYPosBy(y);
 
             if (this.mOscillate.done()) {
                 this.mIsHit = false; 
             }
         }
 
+    }
+
+    slow() {
+        this.mDeltaX -= 0.1;
     }
 
     getToDelete() {
