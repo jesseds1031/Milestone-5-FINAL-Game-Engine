@@ -1,3 +1,4 @@
+
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
 import DyePack from "./dye_pack.js";
@@ -38,6 +39,8 @@ class MyGame extends engine.Scene {
         this.autoSpawn = false;
         this.spawnTimer = 10000;
         this.showLines = false;
+
+        //cameras
         this.zoomCams = null;
     
     }
@@ -66,8 +69,10 @@ class MyGame extends engine.Scene {
         );
         this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
                 // sets the background to gray
+
         this.mCamera.setWCCenter(100, 100)
         console.log(this.mCamera.getWCCenter())
+    
 
         this.mMsg = new engine.FontRenderable("Status Message");
         this.mMsg.setColor([1, 1, 1, 1]);
@@ -112,7 +117,6 @@ class MyGame extends engine.Scene {
                 this.mPatrols.draw(cam);
             }
         }); 
-
         //ZoomCamersSystem Loop
     }
     
@@ -122,36 +126,34 @@ class MyGame extends engine.Scene {
         let msg = "Status: DyePacks(" + this.mDyePacks.size() + ") " + "Patrols("  + this.mPatrols.size() +  ") Autospawn(" + this.autoSpawn + ")" +
         " showLines(" + this.showLines + ")";
 
+        // camera functionality
         this.zoomCams.update();
-
         if (engine.input.isKeyClicked(engine.input.keys.Zero)) {
             this.zoomCams.activateHero(this.mHero, 120)
            
         }
-
         if (engine.input.isKeyClicked(engine.input.keys.One)) {
             if(this.mDyePacks.size() > 0) {
                 this.zoomCams.activateManualDyePack(0, this.mDyePacks.getObjectAt(0), 120)
             }
         }
-
         if (engine.input.isKeyClicked(engine.input.keys.Two)) {
             if(this.mDyePacks.size() > 0) {
                 this.zoomCams.activateManualDyePack(1, this.mDyePacks.getObjectAt(0), 120)
             }
         }
-
         if (engine.input.isKeyClicked(engine.input.keys.Three)) {
             if(this.mDyePacks.size() > 0) {
                 this.zoomCams.activateManualDyePack(2, this.mDyePacks.getObjectAt(0), 120)
             }
         }
 
+
         // Move hero
         this.mHero.update(this.mCamera.mouseWCX(), this.mCamera.mouseWCY());
 
         // Get DyePack to spawn
-        if (engine.input.isKeyClicked(engine.input.keys.Z)) {
+        if (engine.input.isKeyClicked(engine.input.keys.Space)) {
 
             let dyePack = new DyePack(this.kSpriteSheet, 
                 this.mCamera.mouseWCX(), this.mCamera.mouseWCY());
@@ -159,7 +161,6 @@ class MyGame extends engine.Scene {
             //add to gameobject set
             this.mDyePacks.addToSet(dyePack);
 
-            console.log(this.mDyePacks);
         }
 
         //auto-spawn toggle with P
@@ -198,7 +199,6 @@ class MyGame extends engine.Scene {
            } 
         }
 
-
         //autoSpawn capabilities
         if(this.autoSpawn) {
             console.log(this.spawnTimer);
@@ -210,12 +210,66 @@ class MyGame extends engine.Scene {
         }
 
         for (let i = this.mDyePacks.size() - 1; i >= 0; i--) {
-            console.log(this.mDyePacks.getObjectAt(i).getToDelete());
-            if (this.mDyePacks.getObjectAt(i).getToDelete()) { 
+            //Delete if 
+            if (this.mDyePacks.getObjectAt(i).getToDelete() 
+                && !this.mDyePacks.getObjectAt(i).getIsHit()
+                || this.mDyePacks.getObjectAt(i).getSpeed() <= 0) { 
+
                 this.mDyePacks.removeFromSet(this.mDyePacks.getObjectAt(i));
             }
         }
 
+        let h = [];
+        //Test for dyepack collisions with head bounding box and head
+        for (let i = 0; i < this.mDyePacks.size(); i++) {
+            for(let j = 0; j < this.mPatrols.size(); j++) {
+
+                if (this.mDyePacks.getObjectAt(i).getBBox().intersectsBound(
+                    this.mPatrols.getObjectAt(j).getBBox())) {
+                        //slow dyepack
+                        this.mDyePacks.getObjectAt(i).slow();
+
+                }
+                // if touches head
+                if (this.mDyePacks.getObjectAt(i).pixelTouches(
+                    this.mPatrols.getObjectAt(j).getHead(), h)){
+
+                        //oscillate hero size
+                        this.mDyePacks.getObjectAt(i).startOscillate();
+                        this.mPatrols.getObjectAt(j).hitHead();
+
+                    } 
+
+                    console.log((this.mDyePacks.getObjectAt(i).pixelTouches(
+                        this.mPatrols.getObjectAt(j).getTopWing(), h)));
+                    // or if touches wing one
+                if (this.mDyePacks.getObjectAt(i).pixelTouches(
+                    this.mPatrols.getObjectAt(j).getTopWing(), h)) {
+
+                        //oscillate hero size
+                        this.mDyePacks.getObjectAt(i).startOscillate();
+                        this.mPatrols.getObjectAt(j).hitTopWing();
+                    }
+                    // or if touches wing two
+                if (this.mDyePacks.getObjectAt(i).pixelTouches(
+                    this.mPatrols.getObjectAt(j).getBottomWing(), h)) {
+
+                        //oscillate hero size
+                        this.mDyePacks.getObjectAt(i).startOscillate();
+                        this.mPatrols.getObjectAt(j).hitBottomWing();
+                }
+            }
+        }
+
+        // See if hero is hitting patrol box
+        for(let i = 0; i < this.mPatrols.size(); i++) {
+            if (this.mHero.getBBox().intersectsBound(this.mPatrols.getObjectAt(i).getBBox())) {
+                    //slow dyepack
+                    this.mHero.startOscillate();
+
+            }
+
+        }
 
         this.mDyePacks.update();
         this.mPatrols.update();
