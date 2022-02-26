@@ -8,8 +8,9 @@ import Oscillate from "../engine/utils/oscillate.js";
 import Head from "./patrol_components/head.js";
 import Wing from "./patrol_components/wing.js";
 
-class Patrol {
+class Patrol extends engine.GameObject{
     constructor(spriteTexture, atX, atY, dir, showLines) {
+        super(null);
         this.kDelta = 0.3;
         this.xPos = atX;
         this.yPos = atY;
@@ -65,11 +66,21 @@ class Patrol {
         
         
     }
+
+    getHead() {
+        return this.head;
+    }
+
+    getTopWing() {
+        return this.wing_one;
+    }
+
+    getBottomWing() {
+        return this.wing_two;
+    }
     
     hitHead() {
-        this.xPos += 5;
-        
-        
+        this.xPos += 5;  
     }
 
     hitTopWing() {
@@ -143,10 +154,10 @@ class Patrol {
             return true;
         }
 
-        if(this.wing_one.shouldTerminate()) {
+        if(this.wing_one.shouldTerminate() || this.wing_two.shouldTerminate()) {
             return true;
         }
-
+        
         return false;
     }
 }
